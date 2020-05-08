@@ -1,5 +1,10 @@
 load("@rules_cc//cc:defs.bzl", "cc_library")
 
+LINUX_LINKOPTS = [
+    "-ldl",
+    "-lGL",
+]
+
 cc_library(
     name = "gl3w",
     srcs = [
@@ -13,8 +18,7 @@ cc_library(
         "//cmd:__pkg__",
         "//src/renderer/opengl3:__pkg__",
     ],
-    linkopts = [
-        "-ldl",
-        "-lGL",
-    ],
+    linkopts = select({
+        "@bazel_tools//src/conditions:linux_x86_64": LINUX_LINKOPTS,
+    }),
 )
