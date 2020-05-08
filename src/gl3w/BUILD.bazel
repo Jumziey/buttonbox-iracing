@@ -1,0 +1,20 @@
+load("@rules_cc//cc:defs.bzl", "cc_library")
+
+cc_library(
+    name = "gl3w",
+    srcs = [
+        "gl3w.c",
+    ],
+    hdrs = [
+        "gl3w.h",
+        "glcorearb.h",
+    ],
+    visibility = [
+        "//cmd:__pkg__",
+        "//src/renderer/opengl3:__pkg__",
+    ],
+    linkopts = [
+        "-ldl",
+        "-lGL",
+    ],
+)

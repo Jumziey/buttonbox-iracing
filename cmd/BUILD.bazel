@@ -1,0 +1,18 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+
+cc_binary(
+    name = "example",
+    srcs = [
+        "example.cpp",
+    ],
+    deps = [
+        "//src/platform/glfw",
+        "//src/renderer/opengl3",
+        "//src/gl3w",
+        "//src/imgui",
+        "@glfw//:glfw",
+    ],
+    defines = [
+        "IMGUI_IMPL_OPENGL_LOADER_GL3W",
+    ],
+)

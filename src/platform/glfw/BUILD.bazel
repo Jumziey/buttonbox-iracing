@@ -1,0 +1,17 @@
+load("@rules_cc//cc:defs.bzl", "cc_library")
+
+cc_library(
+    name = "glfw",
+    srcs = [
+        "glfw.cpp",
+    ],
+    hdrs = [
+        "glfw.h",
+    ],
+    deps = [
+        "//src/imgui",
+    ],
+    visibility = [
+        "//cmd:__pkg__",
+    ],
+)

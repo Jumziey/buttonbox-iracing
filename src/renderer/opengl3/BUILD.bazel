@@ -1,0 +1,21 @@
+load("@rules_cc//cc:defs.bzl", "cc_library")
+
+cc_library(
+    name = "opengl3",
+    srcs = [
+        "opengl3.cpp",
+    ],
+    hdrs = [
+        "opengl3.h",
+    ],
+    deps = [
+        "//src/imgui",
+        "//src/gl3w",
+    ],
+    visibility = [
+        "//cmd:__pkg__",
+    ],
+    defines = [
+        "IMGUI_IMPL_OPENGL_LOADER_GL3W",
+    ],
+)
