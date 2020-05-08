@@ -10,6 +10,7 @@ cc_library(
     ],
     deps = [
         "//src/imgui",
+        "@glfw//:glfw",
     ],
     visibility = [
         "//cmd:__pkg__",
