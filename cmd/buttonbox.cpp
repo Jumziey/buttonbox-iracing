@@ -12,6 +12,9 @@
 // Include glfw3.h after our OpenGL definitions
 #include "GLFW/glfw3.h"
 
+//#define WINVER 0x0500
+#include <windows.h>
+
 static void glfw_error_callback(int error, const char *description) {
   fprintf(stderr, "Glfw Error %d: %s\n", error, description);
 }
@@ -58,6 +61,21 @@ int main(int, char **) {
   ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0);
   ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0);
 
+  INPUT buttonA;
+  // Set up a generic keyboard event.
+  buttonA.type = INPUT_KEYBOARD;
+  buttonA.ki.wScan = 0; // hardware scan code for key
+  buttonA.ki.time = 0;
+  buttonA.ki.dwExtraInfo = 0;
+  buttonA.ki.wVk = 0x41; // virtual-key code for the "a" key
+
+  INPUT buttonB;
+  // Set up a generic keyboard event.
+  buttonB.type = INPUT_KEYBOARD;
+  buttonB.ki.wScan = 0; // hardware scan code for key
+  buttonB.ki.time = 0;
+  buttonB.ki.dwExtraInfo = 0;
+  buttonB.ki.wVk = 0x42; // virtual-key code for the "a" key
   // Main loop
   while (!glfwWindowShouldClose(window)) {
     glfwPollEvents();
@@ -79,8 +97,21 @@ int main(int, char **) {
 
       ImGui::Text("This is some useful text.");
 
-      if (ImGui::Button("Button"))
-        counter++;
+      auto cp = ImGui::GetCursorPos();
+      if (ImGui::Button("A", ImVec2(300, 300))) {
+        buttonA.ki.dwFlags = 0;
+        SendInput(1, &buttonA, sizeof(INPUT));
+        buttonA.ki.dwFlags = KEYEVENTF_KEYUP;
+        SendInput(1, &buttonA, sizeof(INPUT));
+      }
+      ImGui::SetCursorPos(ImVec2(310, cp.y));
+
+      if (ImGui::Button("B", ImVec2(300, 300))) {
+        buttonB.ki.dwFlags = 0;
+        SendInput(1, &buttonB, sizeof(INPUT));
+        buttonB.ki.dwFlags = KEYEVENTF_KEYUP;
+        SendInput(1, &buttonB, sizeof(INPUT));
+      }
 
       ImGui::End();
     }
