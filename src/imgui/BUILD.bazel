@@ -19,6 +19,8 @@ cc_library(
     visibility = [
         "//cmd:__pkg__",
         "//src/renderer/opengl3:__pkg__",
+        "//src/renderer/directx11:__pkg__",
         "//src/platform/glfw:__pkg__",
+        "//src/platform/win32:__pkg__",
     ],
 )
