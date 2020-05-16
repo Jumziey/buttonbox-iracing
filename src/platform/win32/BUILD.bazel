@@ -1,0 +1,21 @@
+load("@rules_cc//cc:defs.bzl", "cc_library")
+
+cc_library(
+    name = "win32",
+    srcs = [
+        "win32.cpp",
+    ],
+    hdrs = [
+        "win32.h",
+    ],
+    deps = [
+        "//src/imgui",
+    ],
+    visibility = [
+        "//cmd:__pkg__",
+    ],
+    linkopts = [
+        "-DEFAULTLIB:ole32.lib",
+        "-DEFAULTLIB:user32.lib",
+    ],
+)
