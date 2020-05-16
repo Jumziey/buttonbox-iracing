@@ -1,0 +1,23 @@
+load("@rules_cc//cc:defs.bzl", "cc_library")
+
+cc_library(
+    name = "directx11",
+    srcs = [
+        "directx11.cpp",
+    ],
+    hdrs = [
+        "directx11.h",
+    ],
+    deps = [
+        "//src/imgui",
+    ],
+    visibility = [
+        "//cmd:__pkg__",
+    ],
+    defines = [
+    ],
+    linkopts = [
+        "-DEFAULTLIB:d3d11.lib",
+        "-DEFAULTLIB:d3dcompiler.lib",
+    ],
+)
