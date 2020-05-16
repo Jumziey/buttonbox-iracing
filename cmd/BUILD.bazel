@@ -21,9 +21,9 @@ cc_binary(
 )
 
 cc_binary(
-    name = "buttonbox",
+    name = "buttonbox_glfw",
     srcs = [
-        "buttonbox.cpp",
+        "buttonbox_glfw.cpp",
     ],
     deps = [
         "//src/platform/glfw",
@@ -34,6 +34,28 @@ cc_binary(
     ],
     defines = [
         "IMGUI_IMPL_OPENGL_LOADER_GL3W",
+        "GLFW_EXPOSE_NATIVE_WIN32",
+    ],
+		visibility = [
+        "//:__pkg__",
+    ],
+)
+
+#d3d11.lib
+#d3dcompiler.lib
+cc_binary(
+    name = "buttonbox",
+    srcs = [
+        "buttonbox.cpp",
+    ],
+    deps = [
+        "//src/imgui",
+        "//src/platform/win32",
+        "//src/renderer/directx11",
+    ],
+    defines = [
+            "UNICODE",
+            "_UNICODE",
     ],
 		visibility = [
         "//:__pkg__",
