@@ -46,7 +46,8 @@ cc_binary(
 cc_binary(
     name = "buttonbox",
     srcs = [
-        "buttonbox.cpp",
+        "buttonbox/buttonbox.cpp",
+        "buttonbox/buttonbox.h",
     ],
     deps = [
         "//src/imgui",

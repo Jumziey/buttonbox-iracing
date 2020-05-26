@@ -2,33 +2,57 @@
 // If you are new to dear imgui, see examples/README.txt and documentation at
 // the top of imgui.cpp.
 
+#include "buttonbox.h"
 #include "src/imgui/imgui.h"
-#include "src/platform/win32/win32.h"
-#include "src/renderer/directx11/directx11.h"
-#include <d3d11.h>
-#define DIRECTINPUT_VERSION 0x0800
-#include <dinput.h>
-#include <tchar.h>
+#include <ctime>
+#include <iomanip>
+#include <iostream>
 
-// Data
-static ID3D11Device *g_pd3dDevice = NULL;
-static ID3D11DeviceContext *g_pd3dDeviceContext = NULL;
-static IDXGISwapChain *g_pSwapChain = NULL;
-static ID3D11RenderTargetView *g_mainRenderTargetView = NULL;
-
-// Forward declarations of helper functions
-bool CreateDeviceD3D(HWND hWnd);
-void CleanupDeviceD3D();
-void CreateRenderTarget();
-void CleanupRenderTarget();
-LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+// First off: this platform and render code is
+// hillariously messy. I mean its like pure pain to work with.
+// Need to see what i can do about that...
+//
+// EnableWindow(hwnd, false) should be called
+// when clicking on the window
+//
+// EnableWindow(hwnd, true) should be called when
+// clicking on the title bar.
+//
+// When Window is disabled i can use
+// SET_CURSOR and look at the mode of the mouse move there
+// Then also register mouse pos with GetMessagePos(), remember to
+// do a transformation to the window placement
+//
+// How do i check if the title bar is clicked? What the position and size of the
+// title bar?
+//
+// This need to be properly implemented with the imgui/platform/win32
+// code
+//
+// Note that we should try and sort out the platform code
+// perhaps with a proper interface both win32 and glfw can fulfill
+//
+// But how do we then handle the special code with focus on win32?
+// Maybe its not completly needed yet...
+//
 
 // Main code
 int main(int, char **) {
   // Create application window
-  WNDCLASSEX wc = {sizeof(WNDCLASSEX),    CS_CLASSDC, WndProc, 0L,   0L,
-                   GetModuleHandle(NULL), NULL,       NULL,    NULL, NULL,
-                   _T("ImGui Example"),   NULL};
+  WNDCLASSEX wc;
+  wc.cbSize = sizeof(WNDCLASSEX);
+  wc.style = CS_CLASSDC;
+  wc.lpfnWndProc = WndProc;
+  wc.cbClsExtra = 0L;
+  wc.cbWndExtra = 0L;
+  wc.hInstance = GetModuleHandle(NULL);
+  wc.hIcon = NULL;
+  wc.hCursor = NULL;
+  wc.hbrBackground = NULL;
+  wc.lpszMenuName = NULL;
+  wc.lpszClassName = _T("Buttonboxn");
+  wc.hIconSm = NULL;
+
   ::RegisterClassEx(&wc);
   HWND hwnd = ::CreateWindow(
       wc.lpszClassName, _T("Dear ImGui DirectX11 Example"), WS_OVERLAPPEDWINDOW,
@@ -44,6 +68,12 @@ int main(int, char **) {
   // Show the window
   ::ShowWindow(hwnd, SW_SHOWDEFAULT);
   ::UpdateWindow(hwnd);
+
+  // Disable focus
+  ::EnableWindow(hwnd, false);
+  // Should disable on press which isnt header
+  // if header pressed should enable again
+  // Better then doing it like this
 
   // Setup Dear ImGui context
   IMGUI_CHECKVERSION();
@@ -62,34 +92,7 @@ int main(int, char **) {
   ImGui_ImplWin32_Init(hwnd);
   ImGui_ImplDX11_Init(g_pd3dDevice, g_pd3dDeviceContext);
 
-  // Load Fonts
-  // - If no fonts are loaded, dear imgui will use the default font. You can
-  // also load multiple fonts and use ImGui::PushFont()/PopFont() to select
-  // them.
-  // - AddFontFromFileTTF() will return the ImFont* so you can store it if you
-  // need to select the font among multiple.
-  // - If the file cannot be loaded, the function will return NULL. Please
-  // handle those errors in your application (e.g. use an assertion, or display
-  // an error and quit).
-  // - The fonts will be rasterized at a given size (w/ oversampling) and stored
-  // into a texture when calling ImFontAtlas::Build()/GetTexDataAsXXXX(), which
-  // ImGui_ImplXXXX_NewFrame below will call.
-  // - Read 'docs/FONTS.txt' for more instructions and details.
-  // - Remember that in C/C++ if you want to include a backslash \ in a string
-  // literal you need to write a double backslash \\ !
-  // io.Fonts->AddFontDefault();
-  // io.Fonts->AddFontFromFileTTF("../../misc/fonts/Roboto-Medium.ttf", 16.0f);
-  // io.Fonts->AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf", 15.0f);
-  // io.Fonts->AddFontFromFileTTF("../../misc/fonts/DroidSans.ttf", 16.0f);
-  // io.Fonts->AddFontFromFileTTF("../../misc/fonts/ProggyTiny.ttf", 10.0f);
-  // ImFont* font =
-  // io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f,
-  // NULL, io.Fonts->GetGlyphRangesJapanese()); IM_ASSERT(font != NULL);
-
-  // Our state
-  bool show_demo_window = true;
-  bool show_another_window = false;
-  ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+  ImVec4 background_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
   INPUT buttonA;
   // Set up a generic keyboard event.
@@ -141,26 +144,14 @@ int main(int, char **) {
 
       ImGui::Begin("ButtonBoxWindow", &open, ImGuiWindowFlags_NoDecoration);
 
-      ImGui::Text("This is some useful text.");
-
       auto cp = ImGui::GetCursorPos();
       if (ImGui::Button("A", ImVec2(600, 600))) {
-        buttonA.ki.dwFlags = 0;
-        SendInput(1, &buttonA, sizeof(INPUT));
-        buttonA.ki.dwFlags = KEYEVENTF_KEYUP;
-        SendInput(1, &buttonA, sizeof(INPUT));
+        std::cout << "Pressed A" << std::endl;
       }
       ImGui::SetCursorPos(ImVec2(620, cp.y));
 
       if (ImGui::Button("B", ImVec2(600, 600))) {
-        // auto hwnd = glfwGetWin32Window(window);
-        // auto nextHwnd = GetNextWindow(hwnd, GW_HWNDNEXT);
-        // SetForegroundWindow(nextHwnd);
-
-        buttonB.ki.dwFlags = 0;
-        SendInput(1, &buttonB, sizeof(INPUT));
-        buttonB.ki.dwFlags = KEYEVENTF_KEYUP;
-        SendInput(1, &buttonB, sizeof(INPUT));
+        std::cout << "Pressed B" << std::endl;
       }
 
       ImGui::End();
@@ -170,11 +161,10 @@ int main(int, char **) {
     ImGui::Render();
     g_pd3dDeviceContext->OMSetRenderTargets(1, &g_mainRenderTargetView, NULL);
     g_pd3dDeviceContext->ClearRenderTargetView(g_mainRenderTargetView,
-                                               (float *)&clear_color);
+                                               (float *)&background_color);
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
-    g_pSwapChain->Present(1, 0); // Present with vsync
-    // g_pSwapChain->Present(0, 0); // Present without vsync
+    g_pSwapChain->Present(0, 0); // Present without vsync (1,0) to enable vsync
   }
 
   // Cleanup
@@ -277,6 +267,12 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
       CreateRenderTarget();
     }
     return 0;
+  case WM_SETCURSOR: {
+    std::time_t t = std::time(nullptr);
+    std::tm tm = *std::localtime(&t);
+    std::cout << "WndProc called" << std::put_time(&tm, "%c %Z") << std::endl;
+    return 0; // Can be used to avoid the bells
+  }
   case WM_SYSCOMMAND:
     if ((wParam & 0xfff0) == SC_KEYMENU) // Disable ALT application menu
       return 0;
