@@ -13,13 +13,13 @@
 // Need to see what i can do about that...
 //
 // EnableWindow(hwnd, false) should be called
-// when clicking on the window
+// when clicking on the window, if not allready false
 //
 // EnableWindow(hwnd, true) should be called when
 // clicking on the title bar.
 //
 // When Window is disabled i can use
-// SET_CURSOR and look at the mode of the mouse move there
+// SET_CURSOR msg and look at the mode of the mouse there
 // Then also register mouse pos with GetMessagePos(), remember to
 // do a transformation to the window placement
 //
@@ -31,9 +31,6 @@
 //
 // Note that we should try and sort out the platform code
 // perhaps with a proper interface both win32 and glfw can fulfill
-//
-// But how do we then handle the special code with focus on win32?
-// Maybe its not completly needed yet...
 //
 
 // Main code
