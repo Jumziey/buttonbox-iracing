@@ -137,11 +137,19 @@ int main(int, char **) {
 
       auto cp = ImGui::GetCursorPos();
       if (ImGui::Button("A", ImVec2(600, 600))) {
+        buttonA.ki.dwFlags = 0;
+        SendInput(1, &buttonA, sizeof(INPUT));
+        buttonA.ki.dwFlags = KEYEVENTF_KEYUP;
+        SendInput(1, &buttonA, sizeof(INPUT));
         std::cout << "Pressed A" << std::endl;
       }
       ImGui::SetCursorPos(ImVec2(620, cp.y));
 
       if (ImGui::Button("B", ImVec2(600, 600))) {
+        buttonB.ki.dwFlags = 0;
+        SendInput(1, &buttonB, sizeof(INPUT));
+        buttonB.ki.dwFlags = KEYEVENTF_KEYUP;
+        SendInput(1, &buttonB, sizeof(INPUT));
         std::cout << "Pressed B" << std::endl;
       }
 
