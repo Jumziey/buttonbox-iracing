@@ -333,8 +333,24 @@ IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg,
   if (ImGui::GetCurrentContext() == NULL)
     return 0;
 
+  int lbutton = 0;
+  int rbutton = 1;
+  int mbutton = 2;
+
   ImGuiIO &io = ImGui::GetIO();
   switch (msg) {
+
+    // To deal with clicks when not activated
+  case WM_SETCURSOR:
+    switch (HIWORD(lParam)) {
+    case WM_LBUTTONDOWN:
+      io.MouseDown[lbutton] = true;
+      break;
+    case WM_LBUTTONUP:
+      io.MouseDown[lbutton] = false;
+      break;
+    }
+    return 0;
   case WM_LBUTTONDOWN:
   case WM_LBUTTONDBLCLK:
   case WM_RBUTTONDOWN:
@@ -342,47 +358,12 @@ IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg,
   case WM_MBUTTONDOWN:
   case WM_MBUTTONDBLCLK:
   case WM_XBUTTONDOWN:
-  case WM_XBUTTONDBLCLK: {
-    int button = 0;
-    if (msg == WM_LBUTTONDOWN || msg == WM_LBUTTONDBLCLK) {
-      button = 0;
-    }
-    if (msg == WM_RBUTTONDOWN || msg == WM_RBUTTONDBLCLK) {
-      button = 1;
-    }
-    if (msg == WM_MBUTTONDOWN || msg == WM_MBUTTONDBLCLK) {
-      button = 2;
-    }
-    if (msg == WM_XBUTTONDOWN || msg == WM_XBUTTONDBLCLK) {
-      button = (GET_XBUTTON_WPARAM(wParam) == XBUTTON1) ? 3 : 4;
-    }
-    if (!ImGui::IsAnyMouseDown() && ::GetCapture() == NULL)
-      ::SetCapture(hwnd);
-    io.MouseDown[button] = true;
+  case WM_XBUTTONDBLCLK:
     return 0;
-  }
   case WM_LBUTTONUP:
   case WM_RBUTTONUP:
   case WM_MBUTTONUP:
-  case WM_XBUTTONUP: {
-    int button = 0;
-    if (msg == WM_LBUTTONUP) {
-      button = 0;
-    }
-    if (msg == WM_RBUTTONUP) {
-      button = 1;
-    }
-    if (msg == WM_MBUTTONUP) {
-      button = 2;
-    }
-    if (msg == WM_XBUTTONUP) {
-      button = (GET_XBUTTON_WPARAM(wParam) == XBUTTON1) ? 3 : 4;
-    }
-    io.MouseDown[button] = false;
-    if (!ImGui::IsAnyMouseDown() && ::GetCapture() == hwnd)
-      ::ReleaseCapture();
     return 0;
-  }
   case WM_MOUSEWHEEL:
     io.MouseWheel += (float)GET_WHEEL_DELTA_WPARAM(wParam) / (float)WHEEL_DELTA;
     return 0;
@@ -404,10 +385,6 @@ IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg,
     // You can also use ToAscii()+GetKeyboardState() to retrieve characters.
     if (wParam > 0 && wParam < 0x10000)
       io.AddInputCharacterUTF16((unsigned short)wParam);
-    return 0;
-  case WM_SETCURSOR:
-    if (LOWORD(lParam) == HTCLIENT && ImGui_ImplWin32_UpdateMouseCursor())
-      return 1;
     return 0;
   case WM_DEVICECHANGE:
     if ((UINT)wParam == DBT_DEVNODES_CHANGED)
