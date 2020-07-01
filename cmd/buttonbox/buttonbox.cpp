@@ -8,32 +8,19 @@
 #include <iomanip>
 #include <iostream>
 
-// First off: this platform and render code is
-// hillariously messy. I mean its like pure pain to work with.
-// Need to see what i can do about that...
+// good inspiration
+// https://www.codeproject.com/Articles/32563/Virtual-On-Screen-Keyboard-Example
 //
-// EnableWindow(hwnd, false) should be called
-// when clicking on the window, if not allready false
+// I use WS_EX_NOACTIVATE for avoiding focus (took a long fucking time to find).
 //
-// EnableWindow(hwnd, true) should be called when
-// clicking on the title bar.
+// How do i check if the title bar is clicked? Seems i can use it to move when
+// using WS_EX_NOACTIVATE
 //
-// When Window is disabled i can use
-// SET_CURSOR msg and look at the mode of the mouse there
-// Then also register mouse pos with GetMessagePos(), remember to
-// do a transformation to the window placement
+// Interface for platform
+// Interface for renderer
 //
-// How do i check if the title bar is clicked? What the position and size of the
-// title bar?
-//
-// This need to be properly implemented with the imgui/platform/win32
-// code
-//
-// Note that we should try and sort out the platform code
-// perhaps with a proper interface both win32 and glfw can fulfill
-//
+// Class for eventloop and register UI function
 
-// Main code
 int main(int, char **) {
   // Create application window
   WNDCLASSEX wc;
