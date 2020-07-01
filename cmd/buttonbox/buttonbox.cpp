@@ -51,9 +51,9 @@ int main(int, char **) {
   wc.hIconSm = NULL;
 
   ::RegisterClassEx(&wc);
-  HWND hwnd = ::CreateWindow(
-      wc.lpszClassName, _T("Dear ImGui DirectX11 Example"), WS_OVERLAPPEDWINDOW,
-      100, 100, 1280, 800, NULL, NULL, wc.hInstance, NULL);
+  HWND hwnd = ::CreateWindowEx(
+      WS_EX_NOACTIVATE, wc.lpszClassName, _T("Dear ImGui DirectX11 Example"),
+      WS_OVERLAPPEDWINDOW, 100, 100, 1280, 800, NULL, NULL, wc.hInstance, NULL);
 
   // Initialize Direct3D
   if (!CreateDeviceD3D(hwnd)) {
@@ -65,12 +65,6 @@ int main(int, char **) {
   // Show the window
   ::ShowWindow(hwnd, SW_SHOWDEFAULT);
   ::UpdateWindow(hwnd);
-
-  // Disable focus
-  ::EnableWindow(hwnd, false);
-  // Should disable on press which isnt header
-  // if header pressed should enable again
-  // Better then doing it like this
 
   // Setup Dear ImGui context
   IMGUI_CHECKVERSION();
