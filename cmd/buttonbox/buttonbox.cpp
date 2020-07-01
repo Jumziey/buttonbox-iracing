@@ -264,12 +264,6 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
       CreateRenderTarget();
     }
     return 0;
-  case WM_SETCURSOR: {
-    std::time_t t = std::time(nullptr);
-    std::tm tm = *std::localtime(&t);
-    std::cout << "WndProc called" << std::put_time(&tm, "%c %Z") << std::endl;
-    return 0; // Can be used to avoid the bells
-  }
   case WM_SYSCOMMAND:
     if ((wParam & 0xfff0) == SC_KEYMENU) // Disable ALT application menu
       return 0;
